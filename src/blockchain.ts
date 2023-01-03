@@ -8,14 +8,14 @@ export class Blockchain {
   miningReward: number;
 
   constructor() {
-    this.chain = [this.createGenisisBlock()];
+    this.chain = [this.createGenesisBlock()];
     this.difficulty = 2;
     this.pendingTransactions = [];
     this.miningReward = 50;
   }
 
-  createGenisisBlock(): Block {
-    return new Block([new Transaction(null, null, 0)], 'none');
+  createGenesisBlock(): Block {
+    return new Block([], '0');
   }
 
   getLastBlock(): Block {
@@ -43,11 +43,45 @@ export class Blockchain {
     if (!transaction.isValid()) {
       throw new Error("Can't add invalid transaction to the chain");
     }
+
+    if (transaction.amount <= 0) {
+      throw new Error('Transaction amount should be higher than 0');
+    }
+
+    // Making sure that the amount sent is not greater than existing balance
+    const walletBalance = this.getBalanceOfAddress(transaction.fromAddress);
+    if (walletBalance < transaction.amount) {
+      throw new Error('Not enough balance');
+    }
+
+    // Get all other pending transactions for the "from" wallet
+    const pendingTxForWallet = this.pendingTransactions.filter(
+      (tx) => tx.fromAddress === transaction.fromAddress,
+    );
+
+    // If the wallet has more pending transactions, calculate the total amount
+    // of spend coins so far. If this exceeds the balance, we refuse to add this
+    // transaction.
+    if (pendingTxForWallet.length > 0) {
+      const totalPendingAmount = pendingTxForWallet
+        .map((tx) => tx.amount)
+        .reduce((prev, curr) => prev + curr);
+
+      const totalAmount = totalPendingAmount + transaction.amount;
+      if (totalAmount > walletBalance) {
+        throw new Error(
+          'Pending transactions for this wallet is higher than its balance.',
+        );
+      }
+    }
+
+    this.pendingTransactions.push(transaction);
+
     this.pendingTransactions.push(transaction);
   }
 
   getBalanceOfAddress(address: string): number {
-    let balance = 0;
+    let balance = 1000;
 
     for (const block of this.chain) {
       for (const trans of block.transactions) {
@@ -59,7 +93,7 @@ export class Blockchain {
     return balance;
   }
 
-  isValidChain(): boolean {
+  isChainValid(): boolean {
     for (let i = 1; i < this.chain.length; i++) {
       const currentBlock = this.chain[i];
       const prevBlock = this.chain[i - 1];
