@@ -1,23 +1,21 @@
 import { Block } from './block';
+import { Transaction } from './transaction';
 
 export class Blockchain {
   chain: Block[];
   difficulty: number;
   pendingTransactions: Transaction[];
-  minningReward: number;
+  miningReward: number;
 
-  constructor(difficulty?: number) {
+  constructor() {
     this.chain = [this.createGenisisBlock()];
     this.difficulty = 2;
     this.pendingTransactions = [];
-    this.minningReward = 50;
+    this.miningReward = 50;
   }
 
   createGenisisBlock(): Block {
-    return new Block(
-      [{ toAddress: 'none', fromAddress: 'none', amount: 0 }],
-      'none',
-    );
+    return new Block([new Transaction(null, null, 0)], 'none');
   }
 
   getLastBlock(): Block {
@@ -25,24 +23,26 @@ export class Blockchain {
   }
 
   minePendingTransactions(walletAddress: string): void {
-    const block = new Block(this.pendingTransactions);
+    const rewardTx = new Transaction(null, walletAddress, this.miningReward);
+    this.pendingTransactions.push(rewardTx);
 
-    /* Mines new block */
+    const block = new Block(this.pendingTransactions, this.getLastBlock().hash);
     block.mineBlock(this.difficulty);
 
-    /* Add new block to the chain */
+    console.log('Block successfully mined!');
     this.chain.push(block);
 
-    this.pendingTransactions = [
-      {
-        fromAddress: null,
-        toAddress: walletAddress,
-        amount: this.minningReward,
-      },
-    ];
+    this.pendingTransactions = [];
   }
 
-  createTransaction(transaction: Transaction): void {
+  addTransaction(transaction: Transaction): void {
+    if (!transaction.fromAddress || !transaction.toAddress) {
+      throw new Error('Transaction must include from and to address!');
+    }
+
+    if (!transaction.isValid()) {
+      throw new Error("Can't add invalid transaction to the chain");
+    }
     this.pendingTransactions.push(transaction);
   }
 
@@ -63,6 +63,8 @@ export class Blockchain {
     for (let i = 1; i < this.chain.length; i++) {
       const currentBlock = this.chain[i];
       const prevBlock = this.chain[i - 1];
+
+      if (!currentBlock.hasValidTransactions()) return false;
 
       if (currentBlock.hash !== currentBlock.calcualteHash()) return false;
 

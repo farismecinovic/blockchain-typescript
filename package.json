@@ -13,6 +13,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/crypto-js": "^4.1.1",
+    "@types/elliptic": "^6.4.14",
     "@types/jest": "^26.0.24",
     "@typescript-eslint/eslint-plugin": "^5.48.0",
     "@typescript-eslint/parser": "^5.48.0",
@@ -24,5 +25,8 @@
     "ts-jest": "^26.5.6",
     "typescript": "^4.3.5"
   },
-  "repository": "https://github.com/farismecinovic/blockchain-typescript.git"
+  "repository": "https://github.com/farismecinovic/blockchain-typescript.git",
+  "dependencies": {
+    "elliptic": "^6.5.4"
+  }
 }

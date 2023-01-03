@@ -1,4 +1,5 @@
-import crypto from "crypto-js";
+import crypto from 'crypto-js';
+import { Transaction } from './transaction';
 
 const { SHA256 } = crypto;
 
@@ -9,8 +10,8 @@ export class Block {
   hash: string;
   nonce: number;
 
-  constructor(transactions: Transaction[], previousHash = "") {
-    this.timestamp = new Date().toISOString();
+  constructor(transactions: Transaction[], previousHash = '') {
+    this.timestamp = Date.now().toString();
     this.transactions = transactions;
     this.previousHash = previousHash;
     this.hash = this.calcualteHash();
@@ -22,18 +23,26 @@ export class Block {
       this.previousHash +
         this.timestamp +
         JSON.stringify(this.transactions) +
-        this.nonce
+        this.nonce,
     ).toString();
   }
 
   mineBlock(difficulty: number): void {
     while (
-      this.hash.substring(0, difficulty) !== Array(difficulty + 1).join("0")
+      this.hash.substring(0, difficulty) !== Array(difficulty + 1).join('0')
     ) {
       this.nonce++;
       this.hash = this.calcualteHash();
     }
 
-    console.log("Block mined:", this.hash);
+    console.log('Block mined:', this.hash);
+  }
+
+  hasValidTransactions(): boolean {
+    for (const tx of this.transactions) {
+      if (!tx.isValid()) return false;
+    }
+
+    return true;
   }
 }

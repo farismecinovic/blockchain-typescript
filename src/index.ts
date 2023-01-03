@@ -1,31 +1,32 @@
 import { Blockchain } from './blockchain';
+import { Transaction } from './transaction';
+import EC from 'elliptic';
+
+const ec = new EC.ec('secp256k1');
+
+const myKey = ec.keyFromPrivate(
+  'a65ff3312cba338ea15729bd5fa9065cab4cde978b6bd30ad61144568a3f5d00',
+);
+
+const myWalletAddress = myKey.getPublic('hex');
 
 const fareCoin = new Blockchain();
 
-fareCoin.createTransaction({
-  fromAddress: 'address1',
-  toAddress: 'address2',
-  amount: 50,
-});
-
-fareCoin.createTransaction({
-  fromAddress: 'address2',
-  toAddress: 'address1',
-  amount: 10,
-});
+const tx1 = new Transaction(myWalletAddress, 'publicKey goes here', 10);
+tx1.signTransaction(myKey);
+fareCoin.addTransaction(tx1);
 
 console.log('\n Starting the miner..');
-fareCoin.minePendingTransactions('faris-address');
+fareCoin.minePendingTransactions(myWalletAddress);
 
 console.log(
-  '\n Balance of faris-address is:',
-  fareCoin.getBalanceOfAddress('faris-address'),
+  '\n Balance of faris is:',
+  fareCoin.getBalanceOfAddress(myWalletAddress),
 );
 
-console.log('\n Starting the miner again..');
-fareCoin.minePendingTransactions('faris-address');
+// fareCoin.minePendingTransactions(myWalletAddress);
 
-console.log(
-  '\n Balance of faris-address is:',
-  fareCoin.getBalanceOfAddress('faris-address'),
-);
+// console.log(
+//   '\n Balance of faris is:',
+//   fareCoin.getBalanceOfAddress(myWalletAddress),
+// );
