@@ -15,26 +15,21 @@ const myWalletAddress = myKey.getPublic('hex');
 //=========================== Work ===========================//
 
 //Instance of blockchain
-const playgroundBlockchain = new Blockchain();
+const playgroundBlockchain = new Blockchain(Number(process.argv[2] || 4));
+const numOfBlocks = +process.argv[3] || 10;
 
 // Mine first block
 playgroundBlockchain.minePendingTransactions(myWalletAddress);
 
 // Create a transaction & sign it with your key
-const tx1 = new Transaction(myWalletAddress, 'address2', 100);
-tx1.signTransaction(myKey);
-playgroundBlockchain.addTransaction(tx1);
+for (let i = 1; i <= numOfBlocks; i++) {
+  const tx = new Transaction(myWalletAddress, 'address1', 10);
+  tx.signTransaction(myKey);
+  playgroundBlockchain.addTransaction(tx);
 
-// Mine block
-playgroundBlockchain.minePendingTransactions(myWalletAddress);
-
-// Create second transaction
-const tx2 = new Transaction(myWalletAddress, 'address1', 50);
-tx2.signTransaction(myKey);
-playgroundBlockchain.addTransaction(tx2);
-
-// Mine block
-playgroundBlockchain.minePendingTransactions(myWalletAddress);
+  // Mine block
+  playgroundBlockchain.minePendingTransactions(myWalletAddress);
+}
 
 console.log();
 console.log(
@@ -52,3 +47,6 @@ console.log(
   'Blockchain valid?',
   playgroundBlockchain.isChainValid() ? 'Yes' : 'No',
 );
+
+console.log('--- GENERATED CHAIN ---\n');
+// console.log(JSON.stringify(playgroundBlockchain, null, 4));

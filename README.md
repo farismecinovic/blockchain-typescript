@@ -9,6 +9,26 @@ _⚠️ For education purposes only. This is by no means a complete implementati
 - Generate wallet (private/public key)
 - Sign transactions
 
+## Installation
+
+```bash
+yarn;
+```
+
+## Usage
+Balance on this demo is 1000 coins, and every transactions take 10 coins.
+
+It takes a two optional parameters which are
+
+- the difficulty of the mining process. Default is `4`.
+- the number of blocks to mine. Default is `10`.
+
+```bash
+yarn start [difficulty = 4] [numberOfBlocks = 10]
+yarn start 4 10
+```
+
+
 ### Generate a keypair
 To make transactions on this blockchain you need a keypair. The public key becomes your wallet address and the private key is used to sign transactions.
 

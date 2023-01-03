@@ -7,9 +7,9 @@ export class Blockchain {
   pendingTransactions: Transaction[];
   miningReward: number;
 
-  constructor() {
+  constructor(difficulty: number) {
     this.chain = [this.createGenesisBlock()];
-    this.difficulty = 2;
+    this.difficulty = difficulty;
     this.pendingTransactions = [];
     this.miningReward = 50;
   }
@@ -74,8 +74,6 @@ export class Blockchain {
         );
       }
     }
-
-    this.pendingTransactions.push(transaction);
 
     this.pendingTransactions.push(transaction);
   }
