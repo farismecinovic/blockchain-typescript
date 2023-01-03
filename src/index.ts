@@ -1,9 +1,31 @@
-import { Block } from "./block.js";
-import { Blockchain } from "./blockchain.js";
+import { Blockchain } from './blockchain';
 
-let fareCoin = new Blockchain();
+const fareCoin = new Blockchain();
 
-fareCoin.addNewBlock(new Block(1, "3/1/2023", { amount: 20 }));
-fareCoin.addNewBlock(new Block(1, "3/1/2023", { amount: 4 }));
+fareCoin.createTransaction({
+  fromAddress: 'address1',
+  toAddress: 'address2',
+  amount: 50,
+});
 
-console.log(JSON.stringify(fareCoin, null, 4));
+fareCoin.createTransaction({
+  fromAddress: 'address2',
+  toAddress: 'address1',
+  amount: 10,
+});
+
+console.log('\n Starting the miner..');
+fareCoin.minePendingTransactions('faris-address');
+
+console.log(
+  '\n Balance of faris-address is:',
+  fareCoin.getBalanceOfAddress('faris-address'),
+);
+
+console.log('\n Starting the miner again..');
+fareCoin.minePendingTransactions('faris-address');
+
+console.log(
+  '\n Balance of faris-address is:',
+  fareCoin.getBalanceOfAddress('faris-address'),
+);
