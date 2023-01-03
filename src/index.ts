@@ -1,7 +1,9 @@
-export function add(x: number, y: number): number {
-  return x + y;
-}
+import { Block } from "./block.js";
+import { Blockchain } from "./blockchain.js";
 
-export function mul(x: number, y: number): number {
-  return x * y;
-}
+let fareCoin = new Blockchain();
+
+fareCoin.addNewBlock(new Block(1, "3/1/2023", { amount: 20 }));
+fareCoin.addNewBlock(new Block(1, "3/1/2023", { amount: 4 }));
+
+console.log(JSON.stringify(fareCoin, null, 4));
